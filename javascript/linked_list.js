@@ -1,7 +1,35 @@
 class LinkedList {
   constructor(head = null) {
     this.head = head;
+		this.tail = this.find_last();
+		this.size = this.find_size();
   }
+
+	find_last() {
+		let last = null;
+
+		this.iterate((currNode) => {
+			if (!currNode.next) {
+				last = currNode;
+				return true;
+			}
+		});
+
+		return last;
+	}
+
+	find_size() {
+		let size = 0;
+
+		this.iterate((currNode, count) => {
+			if (currNode === this.find_last()) {
+				size = count + 1;
+				return true;
+			}
+		});
+
+		return size;
+	}
 
   iterate(callback) {
     let count = 0;
@@ -47,6 +75,8 @@ class LinkedList {
   addFirst(node) {
     node.next = this.head;
     this.head = node;
+		this.tail = this.find_last();
+		this.size = this.find_size();
   }
 
   // add node to end of list, no nodes should be removed
@@ -54,15 +84,15 @@ class LinkedList {
   addLast(node) {
     if (this.head === null) {
       this.head = node;
-      return;
+			this.tail = node;
+			this.size = this.find_size();
+			return;
     }
 
-    this.iterate(currNode => {
-      if (currNode.next === null) {
-        currNode.next = node;
-        return true;
-      }
-    });
+    const oldLast = this.find_last();
+		oldLast.next = node;
+		this.tail = node;
+		this.size = this.find_size();
   }
 
   // remove the first Node in the list and update head
@@ -72,7 +102,10 @@ class LinkedList {
 
     if (this.head !== null) {
       this.head = this.head.next;
+			this.tail = this.find_last();
     }
+
+		this.size = this.find_size();
 
     return oldHead;
   }
@@ -90,9 +123,12 @@ class LinkedList {
       if (node.next.next === null) {
         oldTail = node.next;
         node.next = null;
+				this.tail = node;
         return true;
       }
     });
+
+		this.size = this.find_size();
 
     return oldTail;
   }
@@ -114,6 +150,9 @@ class LinkedList {
       }
     });
 
+		this.tail = this.find_last();
+		this.size = this.find_size();
+
     return node;
   }
 
@@ -134,6 +173,9 @@ class LinkedList {
         return true;
       }
     });
+
+		this.tail = this.find_last();
+		this.size = this.find_size();
   }
 
   // remove the node at the given index, and return it
@@ -153,11 +195,15 @@ class LinkedList {
       }
     }); 
 
+		this.tail = this.find_last();
+		this.size = this.find_size();
+
     return oldNode;
   }
 
   clear() {
     this.head = null;
+		this.size = 0;
   }
 }
 
@@ -173,7 +219,7 @@ if (require.main === module) {
   let list = new LinkedList(head);
   let emptyList = new LinkedList();
   let oneItemList = new LinkedList(new Node('just one'));
-
+	console.log(oneItemList.size);
 }
 
 module.exports = {
